@@ -816,7 +816,8 @@ function SO(const Args: array of const): ISuperObject; overload;
 
 function SA(const Args: array of const): ISuperObject; overload;
 
-function TryObjectToDate(const obj: ISuperObject; var dt: TDateTime): Boolean;
+{$IFDEF HAVE_RTTI}
+function TryObjectToDate(const obj: ISuperObject; var dt: TDateTime): Boolean; {$ENDIF}
 function UUIDToString(const g: TGUID): SOString;
 function StringToUUID(const str: SOString; var g: TGUID): Boolean;
 
@@ -837,7 +838,10 @@ function SOInvoke(const obj: TValue; const method: string; const params: string;
 
 implementation
 uses
-  sysutils, Windows, superdate
+  sysutils, Windows
+{$IFDEF HAVE_RTTI}
+  ,superdate
+{$ENDIF}
 {$IFDEF FPC}
   ,sockets
 {$ELSE}
@@ -987,6 +991,7 @@ begin
   end;
 end;
 
+{$IFDEF HAVE_RTTI}
 function TryObjectToDate(const obj: ISuperObject; var dt: TDateTime): Boolean;
 var
   i: Int64;
@@ -1010,6 +1015,7 @@ begin
     Result := False;
   end;
 end;
+{$ENDIF}
 
 function SO(const s: SOString): ISuperObject; overload;
 begin
@@ -1091,7 +1097,9 @@ begin
     varSingle:   Result := TSuperObject.Create(VSingle);
     varDouble:   Result := TSuperObject.Create(VDouble);
     varCurrency: Result := TSuperObject.CreateCurrency(VCurrency);
+{$IFDEF HAVE_RTTI}
     varDate:     Result := TSuperObject.Create(DelphiToJavaDateTime(vDate));
+{$ENDIF}
     varOleStr:   Result := TSuperObject.Create(SOString(VOleStr));
     varBoolean:  Result := TSuperObject.Create(VBoolean);
     varShortInt: Result := TSuperObject.Create(VShortInt);
